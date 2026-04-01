@@ -26,6 +26,6 @@ async function sendMessage() {
 
 // loop
 export default function handler(req, res) {
-  res.status(200).send("ok");
-  setInterval(sendMessage, DELAY);
+  console.log("CRON KEJALAN:", new Date().toISOString());
+  res.status(200).send("OK");
 }
