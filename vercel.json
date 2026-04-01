@@ -2,7 +2,7 @@
   "cron": [
     {
       "path": "auto-post.js",
-      "schedule": "*/30 * * * *"
+      "schedule": "*/5 * * * *"
     }
   ]
 }
