@@ -25,4 +25,7 @@ async function sendMessage() {
 }
 
 // loop
-setInterval(sendMessage, DELAY);
+export default function handler(req, res) {
+  res.status(200).send("ok");
+  setInterval(sendMessage, DELAY);
+}
