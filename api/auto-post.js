@@ -1,5 +1,5 @@
 // config
-const MESSAGE = "Test";
+const MESSAGE = "anjay";
 const DELAY = 2000; // 2 detik (jangan terlalu cepat, nanti kena limit)
 
 async function sendMessage() {
