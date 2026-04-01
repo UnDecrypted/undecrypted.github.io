@@ -1,5 +1,5 @@
 {
-  "cron": [
+  "crons": [
     {
       "path": "auto-post.js",
       "schedule": "*/6 * * * *"
