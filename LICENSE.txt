@@ -1,5 +1,0 @@
-Copyright (c) 2025 UnDecrypted. All rights reserved.
-
-This repository and all contents within it are proprietary and confidential. 
-You may not copy, modify, distribute, or otherwise use the code or any part of this repository 
-without the express written consent of the copyright owner.
