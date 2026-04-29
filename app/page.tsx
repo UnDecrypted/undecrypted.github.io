@@ -21,19 +21,6 @@ import {
 export default function Home() {
   const [isHoveredFree, setIsHoveredFree] = useState(false);
   const [isHoveredPremium, setIsHoveredPremium] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white overflow-hidden">
@@ -44,15 +31,6 @@ export default function Home() {
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
       </div>
-
-      {/* Gradient cursor effect */}
-      <div 
-        className="fixed w-96 h-96 rounded-full pointer-events-none transition duration-300 ease-out z-0"
-        style={{
-          background: 'radial-gradient(circle, rgba(34,211,238,0.08) 0%, rgba(34,211,238,0) 70%)',
-          transform: `translate(${mousePosition.x - 192}px, ${mousePosition.y - 192}px)`
-        }}
-      />
 
       <div className="relative z-10 px-4 py-12 flex flex-col items-center justify-center min-h-screen">
         
