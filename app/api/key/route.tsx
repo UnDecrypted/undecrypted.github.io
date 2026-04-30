@@ -208,6 +208,14 @@ export async function GET(req: Request): Promise<Response> {
         );
       }
 
+      // ===== CHECK TOTAL LIMIT =====
+      if (data.usage_count >= data.usage_limit) {
+        return new Response(
+          JSON.stringify({ valid: false, reason: "Total limit reached" }),
+          { status: 200 }
+        );
+      }
+
       // ===== UPDATE =====
       await supabase
         .from("api_keys")
@@ -222,6 +230,7 @@ export async function GET(req: Request): Promise<Response> {
         JSON.stringify({
           valid: true,
           remaining_daily: 1000 - (dailyUsage + 1),
+          remaining_total: data.usage_limit - (data.usage_count + 1)
         }),
         { status: 200 }
       );
