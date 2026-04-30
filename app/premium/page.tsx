@@ -71,7 +71,7 @@ export default function PremiumBuyPage() {
       days: 30, 
       price: 35000, 
       popular: true, 
-      savings: "Save 12.5%",
+      savings: 12.5,
       pricePerDay: "1.166",
       bonus: "+1 Hari Gratis"
     },
@@ -79,7 +79,7 @@ export default function PremiumBuyPage() {
       days: 90, 
       price: 90000, 
       popular: false, 
-      savings: "Save 30%",
+      savings: 30,
       pricePerDay: "1.000",
       bonus: "+2 Hari Gratis"
     }
@@ -145,10 +145,11 @@ export default function PremiumBuyPage() {
                     </span>
                   </div>
                 )}
+
                 {pkg.savings > 0 && (
-                  <div className="absolute -top-3 right-4">
+                  <div className="absolute -top-3 -right-0">
                     <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-green-500 text-white">
-                      {pkg.savings}
+                      {pkg.savings}%
                     </span>
                   </div>
                 )}

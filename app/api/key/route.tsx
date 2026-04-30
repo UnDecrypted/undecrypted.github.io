@@ -103,6 +103,7 @@ export async function GET(req: Request): Promise<Response> {
 
       const formatted = data.map((k) => {
         const expire = new Date(k.expires_at);
+        const now = new Date();
         const diff = expire.getTime() - now.getTime();
 
         return {
@@ -113,6 +114,12 @@ export async function GET(req: Request): Promise<Response> {
           remaining: k.usage_limit - k.usage_count,
           days_left: Math.max(0, Math.floor(diff / 86400000)),
           is_active: k.is_active,
+          expires_at: k.expires_at,
+
+          // TAMBAHAN BIAR GRID GA NGANGGUR
+          daily_usage: k.daily_usage || 0,
+          last_used_date: k.last_used_date,
+          plan: k.plan || "free"
         };
       });
 
@@ -164,13 +171,28 @@ export async function GET(req: Request): Promise<Response> {
         });
       }
 
-      if (new Date(data.expires_at) <= new Date()) {
+      const now = new Date();
+      const today = now.toISOString().split("T")[0];
+      const lastUsed = data.last_used_date
+        ? new Date(data.last_used_date).toISOString().split("T")[0]
+        : null;
+
+      // ===== RESET DAILY COUNT =====
+      let dailyUsage = data.daily_usage || 0;
+
+      if (lastUsed !== today) {
+        dailyUsage = 0;
+      }
+
+      // ===== CHECK EXPIRE =====
+      if (new Date(data.expires_at) <= now) {
         return new Response(
           JSON.stringify({ valid: false, reason: "Expired" }),
           { status: 200 }
         );
       }
 
+      // ===== CHECK ACTIVE =====
       if (!data.is_active) {
         return new Response(
           JSON.stringify({ valid: false, reason: "Inactive" }),
@@ -178,24 +200,28 @@ export async function GET(req: Request): Promise<Response> {
         );
       }
 
-      if (data.usage_count >= data.usage_limit) {
+      // ===== CHECK DAILY LIMIT =====
+      if (dailyUsage >= 1000) {
         return new Response(
-          JSON.stringify({ valid: false, reason: "Limit reached" }),
+          JSON.stringify({ valid: false, reason: "Daily limit reached" }),
           { status: 200 }
         );
       }
 
+      // ===== UPDATE =====
       await supabase
         .from("api_keys")
         .update({
           usage_count: data.usage_count + 1,
+          daily_usage: dailyUsage + 1,
+          last_used_date: now,
         })
         .eq("id", data.id);
 
       return new Response(
         JSON.stringify({
           valid: true,
-          remaining: data.usage_limit - (data.usage_count + 1),
+          remaining_daily: 1000 - (dailyUsage + 1),
         }),
         { status: 200 }
       );
