@@ -23,9 +23,10 @@ import {
   ArrowLeft,
   Loader2,
   BarChart3,
-  Users,
-  CreditCard,
-  Zap
+  Zap,
+  Terminal,
+  AlertTriangle,
+  X
 } from "lucide-react";
 
 export default function AdminPage() {
@@ -152,29 +153,40 @@ export default function AdminPage() {
   // Login Page
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center py-12 px-4">
-        <div className="max-w-md w-full">
-          <div className="relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur opacity-20"></div>
+      <div className="min-h-screen bg-white text-black font-sans">
+        {/* Scanline overlay */}
+        <div className="fixed inset-0 pointer-events-none z-50 opacity-[0.02]"
+          style={{
+            background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, #000 2px, #000 4px)'
+          }}
+        />
 
-            <div className="relative bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-gray-700 p-8 shadow-2xl">
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-500/30 mb-4">
-                  <Shield className="w-4 h-4 text-purple-400" />
-                  <span className="text-xs font-semibold text-purple-400">ADMIN ACCESS</span>
+        <header className="border-b-4 border-black bg-yellow-400">
+          <div className="max-w-md mx-auto px-4 py-4">
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="w-10 h-10 bg-black flex items-center justify-center border-2 border-black group-hover:bg-red-500 transition-colors">
+                <ArrowLeft className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-lg font-black uppercase tracking-tighter">AKM.SCRIPT</span>
+            </Link>
+          </div>
+        </header>
+
+        <main className="flex items-center justify-center py-12 px-4">
+          <div className="max-w-md w-full">
+            <div className="border-4 border-black">
+              <div className="border-b-4 border-black bg-black text-white p-4 text-center">
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-red-500 text-white text-xs font-black uppercase tracking-wider border-2 border-white mb-2">
+                  <Shield className="w-3 h-3" />
+                  RESTRICTED ACCESS
                 </div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  Admin Dashboard
-                </h1>
-                <p className="text-sm text-gray-400 mt-2">
-                  Masukkan kunci admin untuk mengelola API keys
-                </p>
+                <h1 className="text-2xl font-black uppercase tracking-tighter">ADMIN LOGIN</h1>
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Admin Secret Key
+              <div className="p-6 bg-gray-100">
+                <div className="mb-6">
+                  <label className="block text-sm font-black uppercase tracking-wider mb-2">
+                    ADMIN SECRET KEY
                   </label>
                   <input
                     type="password"
@@ -182,56 +194,66 @@ export default function AdminPage() {
                     value={secret}
                     onChange={(e) => setSecret(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-                    className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500 transition-colors"
+                    className="w-full px-4 py-3 bg-white border-4 border-black text-black font-mono font-bold focus:outline-none focus:bg-yellow-50 transition-colors"
                   />
                 </div>
 
                 <button
                   onClick={handleLogin}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-2"
+                  className="w-full py-4 bg-black text-white font-black uppercase tracking-wider border-4 border-black hover:bg-white hover:text-black transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none flex items-center justify-center gap-2"
                 >
-                  <Shield className="w-4 h-4" />
-                  Login as Admin
+                  <Shield className="w-5 h-5" />
+                  LOGIN AS ADMIN
                 </button>
+
+                <p className="text-xs font-bold text-gray-500 mt-4 text-center uppercase tracking-wider">
+                  ⚠ UNAUTHORIZED ACCESS WILL BE LOGGED
+                </p>
               </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
     );
   }
 
   // Admin Dashboard
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="min-h-screen bg-white text-black font-sans">
+      {/* Scanline overlay */}
+      <div className="fixed inset-0 pointer-events-none z-50 opacity-[0.02]"
+        style={{
+          background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, #000 2px, #000 4px)'
+        }}
+      />
 
       {/* Header */}
-      <div className="bg-gray-800/50 border-b border-gray-700 sticky top-0 z-10 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+      <header className="border-b-4 border-black bg-black text-white sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link href="/">
-                <button className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group">
-                  <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                  <span className="text-sm">Back to Home</span>
-                </button>
+            <div className="flex items-center gap-4">
+              <Link href="/" className="flex items-center gap-2 group">
+                <div className="w-8 h-8 bg-white text-black flex items-center justify-center border-2 border-white group-hover:bg-yellow-400 transition-colors">
+                  <ArrowLeft className="w-4 h-4" />
+                </div>
               </Link>
-              <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  Admin Dashboard
-                </h1>
-                <p className="text-xs text-gray-500">Manage API Keys</p>
+              <div className="flex items-center gap-3">
+                <Terminal className="w-5 h-5" />
+                <div>
+                  <h1 className="text-lg font-black uppercase tracking-tighter">ADMIN DASHBOARD</h1>
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">MANAGE API KEYS</p>
+                </div>
               </div>
             </div>
 
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                  <User className="w-4 h-4 text-white" />
+                <div className="w-8 h-8 bg-green-400 border-2 border-white flex items-center justify-center">
+                  <User className="w-4 h-4 text-black" />
                 </div>
                 <div className="hidden sm:block">
-                  <p className="text-sm font-medium text-white">Admin</p>
-                  <p className="text-xs text-gray-400">Super User</p>
+                  <p className="text-sm font-black">ADMIN</p>
+                  <p className="text-xs font-bold text-gray-400 uppercase">SUPER USER</p>
                 </div>
               </div>
 
@@ -241,120 +263,111 @@ export default function AdminPage() {
                   setIsAuthenticated(false);
                   setSecret("");
                 }}
-                className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
+                className="p-2 bg-red-500 text-white border-2 border-white hover:bg-white hover:text-red-500 transition-all"
               >
-                <LogOut className="w-5 h-5" />
+                <X className="w-5 h-5" />
               </button>
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8">
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-gradient-to-br from-purple-500/10 to-purple-600/10 rounded-xl p-4 border border-purple-500/20">
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-gray-400 text-sm">Total Keys</div>
-              <Key className="w-4 h-4 text-purple-400" />
+          {[
+            { label: "TOTAL KEYS", value: stats.total, sub: "ALL TIME", icon: Key, color: "bg-purple-500" },
+            { label: "ACTIVE", value: stats.active, sub: `${stats.active} AKTIF`, icon: CheckCircle, color: "bg-green-500" },
+            { label: "EXPIRED", value: stats.expired, sub: "KADALUARSA", icon: XCircle, color: "bg-red-500" },
+            { label: "TOTAL USAGE", value: stats.totalUsage.toLocaleString(), sub: "REQUESTS", icon: Activity, color: "bg-blue-500" }
+          ].map((stat, idx) => (
+            <div key={idx} className="border-4 border-black p-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 bg-white">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-black uppercase tracking-wider text-gray-500">{stat.label}</span>
+                <div className={`w-6 h-6 ${stat.color} border-2 border-black flex items-center justify-center`}>
+                  <stat.icon className="w-3 h-3 text-white" />
+                </div>
+              </div>
+              <div className="text-3xl font-black">{stat.value}</div>
+              <div className="text-xs font-bold text-gray-500 uppercase mt-1">{stat.sub}</div>
             </div>
-            <div className="text-2xl font-bold text-white">{stats.total}</div>
-            <div className="text-xs text-gray-500">All time</div>
-          </div>
-
-          <div className="bg-gradient-to-br from-green-500/10 to-green-600/10 rounded-xl p-4 border border-green-500/20">
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-gray-400 text-sm">Active Keys</div>
-              <CheckCircle className="w-4 h-4 text-green-400" />
-            </div>
-            <div className="text-2xl font-bold text-white">{stats.active}</div>
-            <div className="text-xs text-green-400">{stats.active} aktif</div>
-          </div>
-
-          <div className="bg-gradient-to-br from-red-500/10 to-red-600/10 rounded-xl p-4 border border-red-500/20">
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-gray-400 text-sm">Expired</div>
-              <XCircle className="w-4 h-4 text-red-400" />
-            </div>
-            <div className="text-2xl font-bold text-white">{stats.expired}</div>
-            <div className="text-xs text-red-400">Kadaluarsa</div>
-          </div>
-
-          <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-xl p-4 border border-blue-500/20">
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-gray-400 text-sm">Total Usage</div>
-              <Activity className="w-4 h-4 text-blue-400" />
-            </div>
-            <div className="text-2xl font-bold text-white">{stats.totalUsage.toLocaleString()}</div>
-            <div className="text-xs text-gray-500">Requests</div>
-          </div>
+          ))}
         </div>
 
         {/* Create Key Section */}
-        <div className="bg-gray-800/50 rounded-xl border border-gray-700 p-6 mb-8">
-          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Plus className="w-5 h-5 text-purple-400" />
-            Generate Premium Key
-          </h2>
-
-          <div className="flex flex-wrap gap-3 mb-4">
-            {[7, 30, 90].map((d) => (
-              <button
-                key={d}
-                onClick={() => setPlan(d as any)}
-                className={`px-6 py-2 rounded-lg font-medium transition-all duration-300 ${plan === d
-                    ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg"
-                    : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                  }`}
-              >
-                {d} Hari
-              </button>
-            ))}
+        <div className="border-4 border-black mb-8">
+          <div className="border-b-4 border-black bg-black text-white p-4 flex items-center gap-3">
+            <Plus className="w-5 h-5" />
+            <h2 className="font-black uppercase tracking-wider">GENERATE PREMIUM KEY</h2>
           </div>
 
-          <div className="flex gap-3">
-            <button
-              onClick={createKey}
-              disabled={loading}
-              className="flex-1 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              {loading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Zap className="w-4 h-4" />
-              )}
-              {loading ? "Generating..." : "Generate Premium Key"}
-            </button>
+          <div className="p-6 bg-gray-100">
+            <div className="flex flex-wrap gap-3 mb-4">
+              {[7, 30, 90].map((d) => (
+                <button
+                  key={d}
+                  onClick={() => setPlan(d as any)}
+                  className={`px-6 py-3 font-black uppercase tracking-wider border-4 border-black transition-all duration-200 ${
+                    plan === d
+                      ? "bg-black text-white translate-x-1 translate-y-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                      : "bg-white text-black hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none"
+                  }`}
+                >
+                  {d} HARI
+                </button>
+              ))}
+            </div>
 
-            <button
-              onClick={() => fetchKeys()}
-              className="px-6 py-3 rounded-xl bg-gray-700 text-white font-semibold hover:bg-gray-600 transition-all duration-300 flex items-center gap-2"
-            >
-              <RefreshCw className="w-4 h-4" />
-              Refresh
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={createKey}
+                disabled={loading}
+                className={`flex-1 py-4 font-black uppercase tracking-wider border-4 border-black transition-all duration-200 flex items-center justify-center gap-2 ${
+                  loading
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    : "bg-black text-white hover:bg-white hover:text-black hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none"
+                }`}
+              >
+                {loading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Zap className="w-5 h-5" />
+                )}
+                {loading ? "GENERATING..." : "GENERATE KEY"}
+              </button>
+
+              <button
+                onClick={() => fetchKeys()}
+                className="px-6 py-4 bg-white text-black font-black uppercase tracking-wider border-4 border-black hover:bg-black hover:text-white transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none flex items-center gap-2"
+              >
+                <RefreshCw className="w-5 h-5" />
+                REFRESH
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Keys List */}
-        <div className="bg-gray-800/50 rounded-xl border border-gray-700 overflow-hidden">
-          <div className="p-4 border-b border-gray-700 flex justify-between items-center">
+        <div className="border-4 border-black">
+          <div className="border-b-4 border-black bg-black text-white p-4 flex justify-between items-center">
             <div>
-              <h2 className="text-lg font-semibold text-white">Daftar API Keys</h2>
-              <p className="text-sm text-gray-400">Semua premium keys yang telah dibuat</p>
+              <h2 className="font-black uppercase tracking-wider">DAFTAR API KEYS</h2>
+              <p className="text-xs font-bold text-gray-400 uppercase">SEMUA PREMIUM KEYS</p>
             </div>
-            <div className="text-sm text-gray-500">
-              Total: {keys.length} keys
+            <div className="px-3 py-1 bg-white text-black text-xs font-black uppercase border-2 border-white">
+              TOTAL: {keys.length}
             </div>
           </div>
 
-          <div className="divide-y divide-gray-700">
+          <div>
             {keys.length === 0 ? (
-              <div className="p-8 text-center">
-                <Key className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-                <p className="text-gray-400">Belum ada API key</p>
-                <p className="text-sm text-gray-500">Generate key premium pertama Anda</p>
+              <div className="p-8 text-center border-b-2 border-gray-200">
+                <div className="w-16 h-16 bg-gray-200 border-4 border-black flex items-center justify-center mx-auto mb-4">
+                  <Key className="w-8 h-8 text-gray-500" />
+                </div>
+                <p className="font-black text-lg mb-2">BELUM ADA API KEY</p>
+                <p className="text-sm font-bold text-gray-500">Generate key premium pertama Anda</p>
               </div>
             ) : (
               keys.map((k, idx) => {
@@ -362,107 +375,100 @@ export default function AdminPage() {
                 const usagePercent = (k.usage / k.limit) * 100;
 
                 return (
-                  <div key={k.key} className="p-4 hover:bg-gray-700/30 transition-colors">
+                  <div key={k.key} className={`p-4 border-b-2 border-gray-200 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                    {/* Status Bar */}
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${isExpired ? 'bg-red-500' : 'bg-green-500'}`}></div>
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${isExpired ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
-                          {isExpired ? 'Expired' : 'Active'}
+                        <div className={`w-3 h-3 border-2 border-black ${isExpired ? 'bg-red-500' : 'bg-green-500'}`} />
+                        <span className={`text-xs px-2 py-1 font-black uppercase border-2 border-black ${
+                          isExpired ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
+                        }`}>
+                          {isExpired ? 'EXPIRED' : 'ACTIVE'}
                         </span>
                         {k.is_premium && (
-                          <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400">
-                            Premium
+                          <span className="text-xs px-2 py-1 font-black uppercase border-2 border-black bg-yellow-400 text-black">
+                            PREMIUM
                           </span>
                         )}
                       </div>
                       <button
                         onClick={() => deleteKey(k.key)}
-                        className="p-1.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                        className="p-2 bg-red-500 text-white border-2 border-black hover:bg-white hover:text-red-500 transition-all"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
 
                     {/* Key Display */}
-                    <div className="flex items-center gap-2 mb-3">
-                      <code className="flex-1 text-sm font-mono bg-gray-900 p-2 rounded-lg text-cyan-400">
+                    <div className="flex items-center gap-2 mb-4">
+                      <code className="flex-1 text-sm font-mono font-bold bg-gray-200 border-2 border-black p-3 break-all">
                         {showKey[k.key] ? k.key : "•".repeat(40)}
                       </code>
                       <button
                         onClick={() => toggleShowKey(k.key)}
-                        className="p-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+                        className="p-3 bg-black text-white border-2 border-black hover:bg-white hover:text-black transition-all"
                         title={showKey[k.key] ? "Hide" : "Show"}
                       >
-                        {showKey[k.key] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        {showKey[k.key] ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                       </button>
                       <button
                         onClick={() => handleCopyKey(k.key)}
-                        className="p-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+                        className="p-3 bg-black text-white border-2 border-black hover:bg-white hover:text-black transition-all"
                         title="Copy"
                       >
                         {copiedKey === k.key ? (
-                          <CheckCircle2 className="w-4 h-4 text-green-400" />
+                          <CheckCircle2 className="w-5 h-5 text-green-400" />
                         ) : (
-                          <Copy className="w-4 h-4" />
+                          <Copy className="w-5 h-5" />
                         )}
                       </button>
                     </div>
 
                     {/* Stats Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
-                      {/* TOTAL USAGE */}
-                      <div>
-                        <p className="text-xs text-gray-500 flex items-center gap-1">
-                          <Hash className="w-3 h-3" /> Usage
-                        </p>
-                        <p className="text-gray-300">
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                      <div className="border-2 border-black p-2">
+                        <p className="text-xs font-black uppercase text-gray-500 mb-1">USAGE</p>
+                        <p className="font-bold text-sm">
                           {k.usage?.toLocaleString() || 0} / {k.limit?.toLocaleString() || 0}
                         </p>
-                        <div className="w-full bg-gray-700 rounded-full h-1 mt-1">
+                        <div className="w-full bg-gray-300 h-2 mt-1 border border-black">
                           <div
-                            className={`rounded-full h-1 ${usagePercent > 80 ? 'bg-red-500' : 'bg-green-500'}`}
+                            className={`h-full border-r-2 border-black ${usagePercent > 80 ? 'bg-red-500' : 'bg-green-500'}`}
                             style={{ width: `${Math.min(usagePercent, 100)}%` }}
                           />
                         </div>
                       </div>
-                      {/* DAILY USAGE */}
-                      <div>
-                        <p className="text-xs text-gray-500 flex items-center gap-1">
-                          <Zap className="w-3 h-3" /> Daily
-                        </p>
-                        <p className="text-gray-300">
+
+                      <div className="border-2 border-black p-2">
+                        <p className="text-xs font-black uppercase text-gray-500 mb-1">DAILY</p>
+                        <p className="font-bold text-sm">
                           {k.daily_usage || 0} / 1000
                         </p>
                       </div>
-                      {/* REMAINING */}
-                      <div>
-                        <p className="text-xs text-gray-500 flex items-center gap-1">
-                          <Activity className="w-3 h-3" /> Remaining
-                        </p>
-                        <p className="text-gray-300">
+
+                      <div className="border-2 border-black p-2">
+                        <p className="text-xs font-black uppercase text-gray-500 mb-1">REMAINING</p>
+                        <p className="font-bold text-sm">
                           {k.remaining?.toLocaleString() || 0}
                         </p>
                       </div>
-                      {/* DAYS LEFT */}
-                      <div>
-                        <p className="text-xs text-gray-500 flex items-center gap-1">
-                          <Calendar className="w-3 h-3" /> Days Left
-                        </p>
-                        <p className={`font-semibold ${k.days_left <= 3 && k.days_left > 0
-                            ? 'text-orange-400'
+
+                      <div className="border-2 border-black p-2">
+                        <p className="text-xs font-black uppercase text-gray-500 mb-1">DAYS LEFT</p>
+                        <p className={`font-black text-sm ${
+                          k.days_left <= 3 && k.days_left > 0
+                            ? 'text-amber-600'
                             : k.days_left <= 0
-                              ? 'text-red-400'
-                              : 'text-green-400'
-                          }`}>
-                          {k.days_left > 0 ? `${k.days_left} hari` : 'Expired'}
+                              ? 'text-red-600'
+                              : 'text-green-600'
+                        }`}>
+                          {k.days_left > 0 ? `${k.days_left} HARI` : 'EXPIRED'}
                         </p>
                       </div>
-                      {/* LAST USED */}
-                      <div>
-                        <p className="text-xs text-gray-500 flex items-center gap-1">
-                          <Clock className="w-3 h-3" /> Last Used
-                        </p>
-                        <p className="text-gray-300 text-xs">
+
+                      <div className="border-2 border-black p-2">
+                        <p className="text-xs font-black uppercase text-gray-500 mb-1">LAST USED</p>
+                        <p className="font-bold text-xs">
                           {k.last_used_date
                             ? new Date(k.last_used_date).toLocaleDateString("id-ID")
                             : "-"}
@@ -477,59 +483,85 @@ export default function AdminPage() {
         </div>
 
         {/* Quick Info */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
-            <div className="flex items-center gap-2 mb-2">
-              <Zap className="w-4 h-4 text-yellow-400" />
-              <h3 className="font-semibold text-white">Premium Features</h3>
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            { 
+              icon: Zap, 
+              title: "PREMIUM FEATURES", 
+              items: ["Unlimited key generation", "Custom duration (7/30/90 days)", "High request limits", "Priority support"],
+              color: "bg-yellow-400"
+            },
+            { 
+              icon: Shield, 
+              title: "SECURITY NOTES", 
+              items: ["Admin secret required", "All keys are tracked", "Usage logs available", "Instant key revocation"],
+              color: "bg-blue-500"
+            },
+            { 
+              icon: BarChart3, 
+              title: "TIPS", 
+              items: ["Monitor key usage regularly", "Delete unused keys", "Refresh to see latest stats", "Keep admin secret safe"],
+              color: "bg-green-500"
+            }
+          ].map((section, idx) => (
+            <div key={idx} className="border-4 border-black p-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 bg-white">
+              <div className="flex items-center gap-2 mb-3">
+                <div className={`w-8 h-8 ${section.color} border-2 border-black flex items-center justify-center`}>
+                  <section.icon className="w-4 h-4 text-black" />
+                </div>
+                <h3 className="font-black uppercase tracking-wider text-sm">{section.title}</h3>
+              </div>
+              <ul className="text-sm font-bold text-gray-600 space-y-1">
+                {section.items.map((item, i) => (
+                  <li key={i}>• {item}</li>
+                ))}
+              </ul>
             </div>
-            <ul className="text-xs text-gray-400 space-y-1">
-              <li>• Unlimited key generation</li>
-              <li>• Custom duration (7/30/90 days)</li>
-              <li>• High request limits</li>
-              <li>• Priority support</li>
-            </ul>
-          </div>
-
-          <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
-            <div className="flex items-center gap-2 mb-2">
-              <Shield className="w-4 h-4 text-blue-400" />
-              <h3 className="font-semibold text-white">Security Notes</h3>
-            </div>
-            <ul className="text-xs text-gray-400 space-y-1">
-              <li>• Admin secret required for access</li>
-              <li>• All keys are tracked</li>
-              <li>• Usage logs available</li>
-              <li>• Instant key revocation</li>
-            </ul>
-          </div>
-
-          <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
-            <div className="flex items-center gap-2 mb-2">
-              <BarChart3 className="w-4 h-4 text-purple-400" />
-              <h3 className="font-semibold text-white">Tips</h3>
-            </div>
-            <ul className="text-xs text-gray-400 space-y-1">
-              <li>• Monitor key usage regularly</li>
-              <li>• Delete unused keys</li>
-              <li>• Refresh to see latest stats</li>
-              <li>• Keep admin secret safe</li>
-            </ul>
-          </div>
+          ))}
         </div>
 
-      </div>
-    </div>
-  );
-}
+      </main>
 
-// Missing LogOut icon import
-function LogOut(props: any) {
-  return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-      <polyline points="16 17 21 12 16 7" />
-      <line x1="21" y1="12" x2="9" y2="12" />
-    </svg>
+      {/* Footer */}
+      <footer className="border-t-4 border-black bg-black text-white py-6 mt-12">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
+          <p className="text-xs font-black uppercase tracking-widest text-gray-500">
+            © 2026 AKM SCRIPT — ADMIN CONSOLE
+          </p>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-green-400 border-2 border-white" />
+            <span className="text-xs font-black uppercase">SYSTEM OK</span>
+          </div>
+        </div>
+      </footer>
+
+      <style jsx global>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+          animation: spin 1s linear infinite;
+        }
+        html {
+          scroll-behavior: smooth;
+        }
+        ::-webkit-scrollbar {
+          width: 16px;
+        }
+        ::-webkit-scrollbar-track {
+          background: #fff;
+          border-left: 4px solid #000;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: #000;
+          border: 2px solid #fff;
+        }
+        ::selection {
+          background: #000;
+          color: #fff;
+        }
+      `}</style>
+    </div>
   );
 }

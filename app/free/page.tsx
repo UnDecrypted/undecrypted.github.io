@@ -12,8 +12,10 @@ import {
   Hash,
   Sparkles,
   Loader2,
-  Tv,
-  MessageCircle
+  Terminal,
+  AlertTriangle,
+  X,
+  ArrowRight
 } from "lucide-react";
 
 export default function FreeKeyPage() {
@@ -91,7 +93,7 @@ export default function FreeKeyPage() {
 
   const createKey = async () => {
     if (!canCreate) return;
-    
+
     setLoading(true);
     setError(null);
 
@@ -104,11 +106,11 @@ export default function FreeKeyPage() {
 
       const data: { key: string } = await res.json();
       setKey(data.key);
-      
+
       setCanGenerate(false);
       setCooldownTime(3600);
       localStorage.setItem('lastGenerateTime', Date.now().toString());
-      
+
     } catch (err) {
       console.error(err);
       setError("Failed to create key");
@@ -132,111 +134,153 @@ export default function FreeKeyPage() {
   };
 
   const socialButtons = [
-    { name: "instagram", label: "Instagram", icon: "📸", color: "from-pink-500 to-rose-500", url: "https://instagram.com/muraaldb_" },
-    { name: "tiktok", label: "TikTok", icon: "🎵", color: "from-black to-gray-800", url: "https://www.tiktok.com/@muraaldb" },
-    { name: "youtube", label: "YouTube", icon: "▶️", color: "from-red-600 to-red-700", url: "https://www.youtube.com/@AKM_86" },
-    { name: "whatsapp", label: "WhatsApp", icon: "💬", color: "from-green-500 to-green-600", url: "https://wa.me/6289525032522" }
+    { name: "instagram", label: "INSTAGRAM", icon: "IG", color: "bg-pink-500", url: "https://instagram.com/muraaldb_" },
+    { name: "tiktok", label: "TIKTOK", icon: "TT", color: "bg-black", url: "https://www.tiktok.com/@muraaldb" },
+    { name: "youtube", label: "YOUTUBE", icon: "YT", color: "bg-red-500", url: "https://www.youtube.com/@AKM_86" },
+    { name: "whatsapp", label: "WHATSAPP", icon: "WA", color: "bg-green-500", url: "https://wa.me/6289525032522" }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-12 px-4">
-      
-      <div className="max-w-md mx-auto mb-6">
-        <Link href="/">
-          <button className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group">
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            <span className="text-sm">Back to Home</span>
-          </button>
-        </Link>
-      </div>
+    <div className="min-h-screen bg-white text-black font-sans">
+      {/* Scanline overlay */}
+      <div className="fixed inset-0 pointer-events-none z-50 opacity-[0.02]"
+        style={{
+          background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, #000 2px, #000 4px)'
+        }}
+      />
 
-      <div className="max-w-md mx-auto">
-        <div className="relative">
-          <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-2xl blur opacity-20"></div>
-          
-          <div className="relative bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-gray-700 p-6 shadow-2xl">
-            
-            <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-500/30 mb-4">
-                <Sparkles className="w-4 h-4 text-cyan-400" />
-                <span className="text-xs font-semibold text-cyan-400">FREE TIER</span>
-              </div>
-              
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                Free API Key Generator
-              </h1>
-              <p className="text-sm text-gray-400 mt-2">
-                Kunjungi salah satu sosial media kami untuk mendapatkan akses
-              </p>
+      {/* Header */}
+      <header className="border-b-4 border-black bg-yellow-400">
+        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 bg-black flex items-center justify-center border-2 border-black group-hover:bg-red-500 transition-colors">
+              <ArrowLeft className="w-5 h-5 text-white" />
             </div>
+            <span className="text-lg font-black uppercase tracking-tighter hidden sm:block">
+              AKM.SCRIPT
+            </span>
+          </Link>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-green-400 border-2 border-black" />
+            <span className="text-xs font-black uppercase tracking-wider">SYSTEM OK</span>
+          </div>
+        </div>
+      </header>
 
-            <div className="grid grid-cols-2 gap-3 mb-6">
-              <div className="bg-gray-900/50 rounded-lg p-3 text-center border border-gray-700">
-                <Clock className="w-4 h-4 text-cyan-400 mx-auto mb-1" />
-                <div className="text-xs text-gray-500">Key Expired</div>
-                <div className="text-sm font-semibold text-white">
-                  {key && timeLeft ? formatTime(timeLeft) : "1 Jam"}
+      <main className="max-w-2xl mx-auto px-4 py-8">
+        {/* Warning Banner */}
+        <div className="mb-6 border-4 border-black bg-red-500 text-white p-4 flex items-start gap-3">
+          <AlertTriangle className="w-6 h-6 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-black uppercase tracking-wider text-sm">FREE TIER LIMITATIONS</p>
+            <p className="text-sm font-bold mt-1 opacity-90">
+              1 HOUR ACCESS. 50 REQUESTS. 1 HOUR COOLDOWN. NO EXCEPTIONS.
+            </p>
+          </div>
+        </div>
+
+        {/* Main Card */}
+        <div className="border-4 border-black bg-white">
+          {/* Card Header */}
+          <div className="border-b-4 border-black bg-black text-white p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Terminal className="w-6 h-6" />
+              <h1 className="text-xl font-black uppercase tracking-tighter">FREE KEY GENERATOR</h1>
+            </div>
+            <div className="px-3 py-1 bg-yellow-400 text-black text-xs font-black uppercase border-2 border-white">
+              V1.0
+            </div>
+          </div>
+
+          <div className="p-6">
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="border-4 border-black p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="w-4 h-4" />
+                  <span className="text-xs font-black uppercase">KEY EXPIRES</span>
+                </div>
+                <div className="text-2xl font-black">
+                  {key && timeLeft ? formatTime(timeLeft) : "1 JAM"}
                 </div>
               </div>
-              <div className="bg-gray-900/50 rounded-lg p-3 text-center border border-gray-700">
-                <Hash className="w-4 h-4 text-cyan-400 mx-auto mb-1" />
-                <div className="text-xs text-gray-500">Request Limit</div>
-                <div className="text-sm font-semibold text-white">50 / Key</div>
+              <div className="border-4 border-black p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <Hash className="w-4 h-4" />
+                  <span className="text-xs font-black uppercase">REQUEST LIMIT</span>
+                </div>
+                <div className="text-2xl font-black">50 / KEY</div>
               </div>
             </div>
 
+            {/* Cooldown Warning */}
             {!canGenerate && cooldownTime && (
-              <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-                <div className="flex items-center gap-2 text-amber-400 text-sm">
-                  <Clock className="w-4 h-4" />
-                  <span>Cooldown: Tunggu {formatTime(cooldownTime)} sebelum generate key baru</span>
+              <div className="mb-6 border-4 border-black bg-amber-400 p-4 flex items-start gap-3">
+                <Clock className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-black uppercase text-sm">COOLDOWN ACTIVE</p>
+                  <p className="font-bold mt-1">
+                    Tunggu {formatTime(cooldownTime)} sebelum generate key baru.
+                  </p>
                 </div>
               </div>
             )}
 
+            {/* Progress Bar */}
             <div className="mb-6">
-              <div className="flex justify-between text-xs text-gray-400 mb-2">
-                <span>Progress Verifikasi</span>
-                <span>{visitedCount}/4 Social Media</span>
+              <div className="flex justify-between text-xs font-black uppercase tracking-wider mb-2">
+                <span>VERIFIKASI PROGRESS</span>
+                <span>{visitedCount}/4 SOCIAL</span>
               </div>
-              <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
+              <div className="w-full h-6 border-4 border-black bg-gray-200">
                 <div
-                  className="h-2 bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-500 rounded-full"
+                  className="h-full bg-black transition-all duration-300"
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-2 text-center">
-                {canCreate ? "✅ Siap generate key!" : !canGenerate ? "⏰ Cooldown aktif" : "⚠️ Kunjungi minimal 1 sosial media"}
+              <p className="text-xs font-bold mt-2 uppercase">
+                {canCreate ? (
+                  <span className="text-green-600">✓ READY TO GENERATE</span>
+                ) : !canGenerate ? (
+                  <span className="text-amber-600">⏱ COOLDOWN AKTIF</span>
+                ) : (
+                  <span className="text-red-600">✕ KUNJUNGI MINIMAL 1 SOCIAL MEDIA</span>
+                )}
               </p>
             </div>
 
+            {/* Social Buttons */}
             <div className="space-y-3 mb-6">
               {socialButtons.map((social) => {
                 const isVisited = visited[social.name as keyof typeof visited];
-                
+
                 return (
                   <button
                     key={social.name}
                     onClick={() => handleVisit(social.name as keyof typeof visited, social.url)}
-                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] ${
-                      isVisited 
-                        ? 'bg-gray-700/50 border border-green-500/50 cursor-default'
-                        : `bg-gradient-to-r ${social.color} shadow-lg hover:shadow-xl`
-                    }`}
                     disabled={isVisited}
+                    className={`w-full flex items-center justify-between px-4 py-4 border-4 border-black transition-all duration-200 ${
+                      isVisited 
+                        ? 'bg-gray-100 cursor-default opacity-60'
+                        : `${social.color} hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none`
+                    }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{social.icon}</span>
-                      <span className="text-white font-medium">{social.label}</span>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-white border-2 border-black flex items-center justify-center font-black text-sm">
+                        {social.icon}
+                      </div>
+                      <span className={`font-black uppercase tracking-wider ${isVisited ? 'text-gray-500' : 'text-white'}`}>
+                        {social.label}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       {isVisited ? (
                         <>
-                          <CheckCircle2 className="w-4 h-4 text-green-400" />
-                          <span className="text-xs text-green-400">Verified</span>
+                          <CheckCircle2 className="w-5 h-5 text-green-600" />
+                          <span className="text-xs font-black uppercase text-green-600">DONE</span>
                         </>
                       ) : (
-                        <span className="text-xs text-white/70">Kunjungi →</span>
+                        <span className="text-xs font-black uppercase text-white">VISIT →</span>
                       )}
                     </div>
                   </button>
@@ -244,120 +288,136 @@ export default function FreeKeyPage() {
               })}
             </div>
 
+            {/* Generate Button */}
             <button
               onClick={createKey}
               disabled={!canCreate || loading}
-              className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] ${
+              className={`w-full py-4 border-4 border-black font-black uppercase tracking-wider text-lg transition-all duration-200 flex items-center justify-center gap-3 ${
                 canCreate && !loading
-                  ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg hover:shadow-xl'
-                  : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                  ? 'bg-black text-white hover:bg-white hover:text-black hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none'
+                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'
               }`}
             >
               {loading ? (
-                <div className="flex items-center justify-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Generating...</span>
-                </div>
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>GENERATING...</span>
+                </>
               ) : (
-                <div className="flex items-center justify-center gap-2">
-                  <Sparkles className="w-4 h-4" />
-                  <span>Generate API Key</span>
-                </div>
+                <>
+                  <Sparkles className="w-5 h-5" />
+                  <span>GENERATE API KEY</span>
+                </>
               )}
             </button>
 
+            {/* Error */}
             {error && (
-              <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
-                <p className="text-red-400 text-sm">{error}</p>
+              <div className="mt-4 border-4 border-black bg-red-500 text-white p-4 flex items-start gap-3">
+                <X className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <p className="font-bold">{error}</p>
               </div>
             )}
 
+            {/* Key Display */}
             {key && (
-              <div className="mt-6 p-4 bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl border border-cyan-500/20 animate-fade-in">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs text-cyan-400 font-semibold flex items-center gap-1">
-                    <Shield className="w-3 h-3" />
-                    YOUR API KEY
-                  </p>
-                  <div className="flex items-center gap-1 text-xs text-gray-500">
+              <div className="mt-6 border-4 border-black bg-gray-100">
+                <div className="border-b-4 border-black bg-black text-white p-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Shield className="w-4 h-4" />
+                    <span className="text-xs font-black uppercase tracking-wider">YOUR API KEY</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-bold">
                     <Clock className="w-3 h-3" />
-                    <span>Expires: {timeLeft && timeLeft > 0 ? formatTime(timeLeft) : 'Expired'}</span>
+                    <span>EXP: {timeLeft && timeLeft > 0 ? formatTime(timeLeft) : 'EXPIRED'}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 bg-black/30 rounded-lg p-3 border border-gray-700">
-                  <code className="text-sm font-mono text-cyan-400 break-all flex-1">
-                    {key}
-                  </code>
+                <div className="p-4">
+                  <div className="flex items-center gap-2 border-4 border-black bg-white p-3">
+                    <code className="text-sm font-mono break-all flex-1 text-black">
+                      {key}
+                    </code>
 
-                  <button
-                    onClick={copyKey}
-                    className="p-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors group"
-                  >
-                    {copied ? (
-                      <CheckCircle2 className="w-4 h-4 text-green-400" />
-                    ) : (
-                      <Copy className="w-4 h-4 text-gray-300 group-hover:text-white transition-colors" />
-                    )}
-                  </button>
+                    <button
+                      onClick={copyKey}
+                      className="p-3 bg-black text-white border-2 border-black hover:bg-white hover:text-black transition-all flex-shrink-0"
+                    >
+                      {copied ? (
+                        <CheckCircle2 className="w-5 h-5 text-green-400" />
+                      ) : (
+                        <Copy className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+
+                  <p className="text-xs font-bold text-gray-500 mt-3 uppercase tracking-wider text-center">
+                    ⚠ SIMPAN KEY INI. AKAN HILANG SAAT EXPIRED.
+                  </p>
                 </div>
-
-                <p className="text-xs text-gray-500 mt-3 text-center">
-                  🔒 Simpan kode ini dengan aman. Key akan expired dalam 1 jam.
-                </p>
               </div>
             )}
 
-            <div className="mt-6 pt-4 border-t border-gray-700 text-center">
-              <p className="text-xs text-gray-500">
-                🚀 Butuh lebih banyak request? 
-                <Link href="/premium" className="text-amber-400 hover:text-amber-300 ml-1">
-                  Upgrade ke Premium
-                </Link>
+            {/* Upgrade CTA */}
+            <div className="mt-6 border-t-4 border-black pt-4 text-center">
+              <p className="text-sm font-bold text-gray-600">
+                BUTUH LEBIH BANYAK REQUEST?
               </p>
+              <Link href="/premium" className="inline-flex items-center gap-2 mt-2 px-6 py-2 bg-yellow-400 text-black font-black uppercase tracking-wider border-4 border-black hover:bg-black hover:text-yellow-400 transition-all">
+                <span>UPGRADE PREMIUM</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
-
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-3">
-          <div className="bg-gray-800/50 rounded-xl p-3 border border-gray-700 text-center">
-            <div className="text-xs text-gray-500">⏱️ Cooldown Generate</div>
-            <div className="text-sm font-semibold text-amber-400">1 Jam</div>
+        {/* Info Cards */}
+        <div className="grid grid-cols-2 gap-4 mt-6">
+          <div className="border-4 border-black p-4 bg-cyan-400">
+            <div className="text-xs font-black uppercase tracking-wider mb-1">COOLDOWN</div>
+            <div className="text-2xl font-black">1 JAM</div>
           </div>
-          <div className="bg-gray-800/50 rounded-xl p-3 border border-gray-700 text-center">
-            <div className="text-xs text-gray-500">🔄 Auto Reset</div>
-            <div className="text-sm font-semibold text-cyan-400">Setiap 1 Jam</div>
+          <div className="border-4 border-black p-4 bg-green-400">
+            <div className="text-xs font-black uppercase tracking-wider mb-1">AUTO RESET</div>
+            <div className="text-2xl font-black">SETIAP 1 JAM</div>
           </div>
         </div>
+      </main>
 
-      </div>
+      {/* Footer */}
+      <footer className="border-t-4 border-black bg-black text-white py-6 mt-12">
+        <div className="max-w-2xl mx-auto px-4 text-center">
+          <p className="text-xs font-black uppercase tracking-widest text-gray-500">
+            © 2026 AKM SCRIPT — FREE TIER
+          </p>
+        </div>
+      </footer>
 
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.4s ease-out;
-        }
+      <style jsx global>{`
         @keyframes spin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
         .animate-spin {
           animation: spin 1s linear infinite;
+        }
+        html {
+          scroll-behavior: smooth;
+        }
+        ::-webkit-scrollbar {
+          width: 16px;
+        }
+        ::-webkit-scrollbar-track {
+          background: #fff;
+          border-left: 4px solid #000;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: #000;
+          border: 2px solid #fff;
+        }
+        ::selection {
+          background: #000;
+          color: #fff;
         }
       `}</style>
     </div>
