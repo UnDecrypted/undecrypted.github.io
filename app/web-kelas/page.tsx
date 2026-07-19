@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 // ============================================================
 // DATA
@@ -73,7 +74,7 @@ const messages = [
 ];
 
 // Fixed per-card jitter so re-renders don't reshuffle the "handmade" feel
-const jitter = (i, amp = 3) => {
+const jitter = (i: number, amp: number = 3): string => {
   const seedVals = [-1, 1, -0.6, 0.8, -0.3, 1.2, -1.4, 0.5, -0.9, 1.6, -0.4, 0.9];
   return (seedVals[i % seedVals.length] * amp).toFixed(2);
 };
@@ -263,15 +264,15 @@ const globalStyles = `
 // ============================================================
 // SMALL REUSABLE PIECES (the page's signature motif)
 // ============================================================
-function Pin({ color = "var(--stamp)", style }) {
+function Pin({ color = "var(--stamp)", style }: { color?: string; style?: CSSProperties }) {
   return <span className="pin" style={{ background: color, ...style }} />;
 }
 
-function Tape({ i = 0, rotate = -4, style }) {
+function Tape({ i = 0, rotate = -4, style }: { i?: number; rotate?: number; style?: CSSProperties }) {
   return <span className="tape" style={{ background: tapeColors[i % tapeColors.length], transform: `rotate(${rotate}deg)`, ...style }} />;
 }
 
-function Eyebrow({ children, style }) {
+function Eyebrow({ children, style }: { children: ReactNode; style?: CSSProperties }) {
   return (
     <div
       className="mono"
@@ -293,7 +294,7 @@ function Eyebrow({ children, style }) {
   );
 }
 
-function SectionTitle({ children }) {
+function SectionTitle({ children }: { children: ReactNode }) {
   return (
     <h2
       className="display"
@@ -639,7 +640,7 @@ function Messages() {
               backgroundPosition: "0 3.4rem",
             }}
           >
-            <Tape i={i} rotate={jitter(i, 5)} style={{ top: "-10px", left: "2rem" }} />
+            <Tape i={i} rotate={parseFloat(jitter(i, 5))} style={{ top: "-10px", left: "2rem" }} />
             <p className="hand" style={{ fontSize: "1.5rem", color: "var(--ink)", marginBottom: "1.4rem" }}>
               &ldquo;{m.text}&rdquo;
             </p>
