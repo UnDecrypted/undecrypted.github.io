@@ -65,14 +65,14 @@ function MusicPlayer() {
   // Jalur path langsung mengarah ke folder public/
   const tracks = [
     { 
-      title: "Mbak Billie", 
-      url: "/Mbak-Billie.mp3", 
-      cover: "/music/cover-01.jpg"
+      title: "Danger Line", 
+      url: "/danger-line.mp3", 
+      cover: "/a7x.jpg"
     },
     { 
-      title: "LOCAL AMBIENT 02", 
-      url: "/music/background-02.mp3",
-      cover: "/music/cover-02.jpg"
+      title: "Seize the Day", 
+      url: "/seize-the-day.mp3",
+      cover: "/seize.jpg"
     }
   ];
 
