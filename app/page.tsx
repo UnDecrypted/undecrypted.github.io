@@ -1,78 +1,37 @@
 "use client";
 
-import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { 
-  Zap, 
-  Clock, 
-  Hash, 
-  Share2, 
-  Trophy, 
-  Infinity,
-  Sparkles,
-  ArrowRight,
-  CheckCircle2,
-  Star,
-  Flame,
-  Shield,
-  Rocket,
-  X,
-  Menu,
+import Link from "next/link";
+import {
   ArrowUpRight,
-  AlertTriangle,
+  ArrowRight,
+  Mail,
+  Globe,
+  AtSign,
+  MessageSquare,
+  Menu,
+  X,
   Terminal,
-  Cpu,
-  Lock,
+  MousePointer,
   Eye,
-  MousePointer
+  Download,
+  Hash,
+  ChevronRight,
+  CircleDot,
+  Diamond,
+  MapPin,
+  Calendar,
+  Briefcase,
+  Code2,
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  SkipForward,
+  Music
 } from "lucide-react";
 
-// Glitch text effect component
-function GlitchText({ text, className = "" }: { text: string; className?: string }) {
-  return (
-    <span className={`relative inline-block group ${className}`}>
-      <span className="relative z-10">{text}</span>
-      <span className="absolute top-0 left-0 -z-10 w-full h-full text-red-500 opacity-0 group-hover:opacity-70 group-hover:translate-x-[2px] transition-all duration-100">
-        {text}
-      </span>
-      <span className="absolute top-0 left-0 -z-10 w-full h-full text-cyan-500 opacity-0 group-hover:opacity-70 group-hover:-translate-x-[2px] transition-all duration-100">
-        {text}
-      </span>
-    </span>
-  );
-}
-
-// Marquee component for brutalist feel
-function Marquee({ items, direction = "left", speed = 20 }: { items: string[]; direction?: "left" | "right"; speed?: number }) {
-  return (
-    <div className="overflow-hidden border-y-2 border-black bg-yellow-400 py-2">
-      <div 
-        className={`flex whitespace-nowrap ${direction === "left" ? "animate-marquee-left" : "animate-marquee-right"}`}
-        style={{ animationDuration: `${speed}s` }}
-      >
-        {[...items, ...items, ...items, ...items].map((item, idx) => (
-          <span key={idx} className="mx-4 text-sm font-black uppercase tracking-widest text-black flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4" />
-            {item}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// Scanline overlay
-function Scanlines() {
-  return (
-    <div className="fixed inset-0 pointer-events-none z-50 opacity-[0.03]"
-      style={{
-        background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, #000 2px, #000 4px)'
-      }}
-    />
-  );
-}
-
-// Custom hook for scroll animations
+// Scroll animation hook
 function useInView(threshold = 0.1) {
   const ref = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
@@ -94,6 +53,158 @@ function useInView(threshold = 0.1) {
   return { ref, isInView };
 }
 
+// Custom Brutalist Music Player (Fixed Pause & Static Cover Art)
+// Custom Brutalist Music Player (Local Files Audio Setup)
+function MusicPlayer() {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [currentTrack, setCurrentTrack] = useState(0);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+  // Jalur path langsung mengarah ke folder public/
+  const tracks = [
+    { 
+      title: "Mbak Billie", 
+      url: "/Mbak-Billie.mp3", 
+      cover: "/music/cover-01.jpg"
+    },
+    { 
+      title: "LOCAL AMBIENT 02", 
+      url: "/music/background-02.mp3",
+      cover: "/music/cover-02.jpg"
+    }
+  ];
+
+  // Efek Autoplay dari interaksi pertama di halaman web
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      if (audioRef.current && isInitialLoad) {
+        audioRef.current.play()
+          .then(() => {
+            setIsPlaying(true);
+            setIsInitialLoad(false);
+          })
+          .catch((err) => console.log("Autoplay blocked by browser:", err));
+      }
+      window.removeEventListener("click", handleFirstInteraction);
+    };
+
+    window.addEventListener("click", handleFirstInteraction);
+    return () => window.removeEventListener("click", handleFirstInteraction);
+  }, [isInitialLoad]);
+
+  // Sinkronisasi source audio saat track berganti tanpa merusak status pause
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.src = tracks[currentTrack].url;
+      if (isPlaying && !isInitialLoad) {
+        audioRef.current.play().catch((err) => console.log("Playback error:", err));
+      }
+    }
+  }, [currentTrack]);
+
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    
+    if (isInitialLoad) setIsInitialLoad(false);
+
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch((err) => console.log("Playback error:", err));
+    }
+  };
+
+  const toggleMute = () => {
+    if (!audioRef.current) return;
+    audioRef.current.muted = !isMuted;
+    setIsMuted(!isMuted);
+  };
+
+  const nextTrack = () => {
+    setCurrentTrack((prev) => (prev + 1) % tracks.length);
+  };
+
+  return (
+    <div className="fixed bottom-0 left-0 right-0 md:bottom-6 md:left-6 md:right-auto z-50 bg-white border-t-4 md:border-4 border-black p-4 shadow-[0_-4px_0_0_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-full md:max-w-sm w-full md:w-80 transition-all">
+      <audio ref={audioRef} onEnded={nextTrack} />
+      
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between border-b-2 border-black pb-2">
+          <span className="text-xs font-black uppercase tracking-widest text-gray-500 flex items-center gap-2">
+            <span className={`w-2 h-2 bg-green-500 border border-black ${isPlaying ? 'animate-pulse' : ''}`} />
+            {isPlaying ? "PLAYING" : "PAUSED"}
+          </span>
+          <span className="text-[10px] font-bold bg-black text-white px-1">TRACK {currentTrack + 1}/{tracks.length}</span>
+        </div>
+        
+        <div className="flex flex-row items-center gap-3">
+          <div className="w-16 h-16 border-2 border-black bg-gray-100 flex-shrink-0 overflow-hidden relative">
+            {tracks[currentTrack].cover ? (
+              <img 
+                src={tracks[currentTrack].cover} 
+                alt="Track Cover" 
+                className="w-full h-full object-cover grayscale"
+              />
+            ) : (
+              <Music className="w-6 h-6 text-black absolute inset-0 m-auto" />
+            )}
+          </div>
+
+          <div className="flex-1 min-w-0 flex flex-col gap-1">
+            <p className="text-sm font-black uppercase tracking-tight truncate py-0.5">
+              {tracks[currentTrack].title}
+            </p>
+
+            <div className="grid grid-cols-3 gap-2 mt-1">
+              <button 
+                onClick={togglePlay}
+                className="border-2 border-black p-1.5 flex items-center justify-center font-black text-xs uppercase hover:bg-black hover:text-white transition-colors"
+              >
+                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-black hover:fill-white" />}
+              </button>
+              
+              <button 
+                onClick={nextTrack}
+                className="border-2 border-black p-1.5 flex items-center justify-center font-black text-xs uppercase hover:bg-black hover:text-white transition-colors"
+              >
+                <SkipForward className="w-4 h-4" />
+              </button>
+
+              <button 
+                onClick={toggleMute}
+                className="border-2 border-black p-1.5 flex items-center justify-center font-black text-xs uppercase hover:bg-black hover:text-white transition-colors"
+              >
+                {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Marquee component
+function Marquee({ items, speed = 25 }: { items: string[]; speed?: number }) {
+  return (
+    <div className="overflow-hidden border-y-4 border-black bg-black py-3">
+      <div className="flex whitespace-nowrap animate-marquee" style={{ animationDuration: `${speed}s` }}>
+        {[...items, ...items, ...items, ...items].map((item, idx) => (
+          <span key={idx} className="mx-8 text-sm font-black uppercase tracking-[0.3em] text-white flex items-center gap-3">
+            <Diamond className="w-3 h-3 fill-white" />
+            {item}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // Navigation
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -107,57 +218,70 @@ function Navbar() {
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-40 border-b-4 border-black transition-all duration-200 ${
-      scrolled ? "bg-white" : "bg-yellow-400"
+      scrolled ? "bg-white" : "bg-black text-white"
     }`}>
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-black flex items-center justify-center border-2 border-black group-hover:bg-red-500 transition-colors">
-              <Terminal className="w-6 h-6 text-white" />
+            <div className={`w-10 h-10 flex items-center justify-center border-4 border-black transition-colors ${
+              scrolled ? "bg-black text-white group-hover:bg-white group-hover:text-black" : "bg-white text-black group-hover:bg-black group-hover:text-white"
+            }`}>
+              <Terminal className="w-5 h-5" />
             </div>
-            <span className="text-2xl font-black tracking-tighter uppercase">
-              <GlitchText text="AKM.SCRIPT" />
+            <span className="text-xl font-black tracking-tighter uppercase">
+              MRA.DEV
             </span>
           </Link>
 
-          {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-1">
-            {["FEATURES", "PRICING", "DOCS", "STATUS"].map((item) => (
+            {["WORK", "ABOUT", "CONTACT"].map((item) => (
               <a 
                 key={item}
                 href={`#${item.toLowerCase()}`}
-                className="px-4 py-2 text-sm font-bold uppercase tracking-wider border-2 border-transparent hover:border-black hover:bg-black hover:text-white transition-all"
+                className={`px-4 py-2 text-sm font-black uppercase tracking-wider border-4 border-transparent transition-all ${
+                  scrolled 
+                    ? "hover:border-black hover:bg-black hover:text-white" 
+                    : "hover:border-white hover:bg-white hover:text-black"
+                }`}
               >
                 {item}
               </a>
             ))}
-            <Link href="/free">
-              <button className="ml-4 px-6 py-2 bg-black text-white font-bold uppercase tracking-wider border-2 border-black hover:bg-white hover:text-black transition-all">
-                GET KEY →
-              </button>
-            </Link>
+            <a 
+              href="#contact"
+              className={`ml-4 px-6 py-2 font-black uppercase tracking-wider border-4 transition-all ${
+                scrolled 
+                  ? "bg-black text-white border-black hover:bg-white hover:text-black" 
+                  : "bg-white text-black border-white hover:bg-black hover:text-white"
+              }`}
+            >
+              HIRE ME →
+            </a>
           </div>
 
-          {/* Mobile Toggle */}
           <button 
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden w-10 h-10 bg-black text-white flex items-center justify-center border-2 border-black hover:bg-red-500 transition-colors"
+            className={`md:hidden w-10 h-10 flex items-center justify-center border-4 transition-colors ${
+              scrolled ? "bg-black text-white border-black" : "bg-white text-black border-white"
+            }`}
           >
             {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-white border-t-4 border-black">
+        <div className={`md:hidden border-t-4 border-black ${scrolled ? "bg-white" : "bg-black text-white"}`}>
           <div className="p-4 space-y-2">
-            {["FEATURES", "PRICING", "DOCS", "STATUS"].map((item) => (
+            {["WORK", "ABOUT", "CONTACT"].map((item) => (
               <a 
                 key={item}
                 href={`#${item.toLowerCase()}`}
-                className="block px-4 py-3 text-lg font-bold uppercase tracking-wider border-2 border-black hover:bg-black hover:text-white transition-all"
+                className={`block px-4 py-3 text-lg font-black uppercase tracking-wider border-4 transition-all ${
+                  scrolled 
+                    ? "border-black hover:bg-black hover:text-white" 
+                    : "border-white hover:bg-white hover:text-black"
+                }`}
                 onClick={() => setIsOpen(false)}
               >
                 {item}
@@ -183,99 +307,123 @@ function HeroSection() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center pt-20 bg-white overflow-hidden">
-      {/* Brutalist grid background */}
-      <div className="absolute inset-0 opacity-10"
+    <section className="relative min-h-screen flex items-center justify-center bg-black text-white overflow-hidden">
+      {/* Grid background */}
+      <div className="absolute inset-0 opacity-20"
         style={{
-          backgroundImage: `
-            linear-gradient(#000 1px, transparent 1px),
-            linear-gradient(90deg, #000 1px, transparent 1px)
-          `,
-          backgroundSize: '40px 40px'
+          backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
+          backgroundSize: '60px 60px'
         }}
       />
 
-      {/* Floating elements following mouse */}
+      {/* Floating shapes */}
       <div 
-        className="absolute w-32 h-32 border-4 border-red-500 opacity-20 pointer-events-none hidden lg:block"
+        className="absolute w-40 h-40 border-4 border-white opacity-10 hidden lg:block"
         style={{
-          transform: `translate(${mousePos.x * 0.02}px, ${mousePos.y * 0.02}px)`,
-          top: '20%',
-          right: '15%',
+          transform: `translate(${mousePos.x * 0.015}px, ${mousePos.y * 0.015}px)`,
+          top: '15%',
+          right: '10%',
           transition: 'transform 0.3s ease-out'
         }}
       />
       <div 
-        className="absolute w-24 h-24 bg-cyan-400 opacity-20 pointer-events-none hidden lg:block"
+        className="absolute w-24 h-24 bg-white opacity-5 hidden lg:block"
         style={{
-          transform: `translate(${-mousePos.x * 0.015}px, ${-mousePos.y * 0.015}px)`,
-          bottom: '25%',
-          left: '10%',
+          transform: `translate(${-mousePos.x * 0.01}px, ${-mousePos.y * 0.01}px)`,
+          bottom: '20%',
+          left: '8%',
           transition: 'transform 0.3s ease-out'
         }}
       />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 text-center">
-        {/* Warning badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-500 text-white font-bold text-xs uppercase tracking-widest border-2 border-black mb-8 rotate-[-2deg] hover:rotate-0 transition-transform cursor-default">
-          <AlertTriangle className="w-4 h-4" />
-          NOT FOR EVERYONE — POWER USERS ONLY
-        </div>
+      <div className="relative z-10 max-w-6xl mx-auto px-4 mt-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Left: Content */}
+          <div className="text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 px-4 py-2 border-4 border-white mb-8 rotate-[-1deg]">
+              <CircleDot className="w-3 h-3 text-white" />
+              <span className="text-xs font-black uppercase tracking-[0.3em]">Available for work</span>
+            </div>
 
-        {/* Main Title */}
-        <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-[0.85] mb-8">
-          <span className="block">GENERATE</span>
-          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-yellow-400 to-cyan-500">
-            API KEYS
-          </span>
-          <span className="block">FAST.</span>
-        </h1>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter leading-[0.9] mb-2">
+              <span className="block">MUHAMMAD</span>
+              <span className="block">RAIHAN</span>
+              <span className="block text-transparent bg-clip-text" 
+                style={{ WebkitTextStroke: '2px white' }}>
+                ALI
+              </span>
+            </h1>
 
-        {/* Subtitle with brutalist styling */}
-        <div className="max-w-2xl mx-auto mb-10">
-          <div className="border-l-4 border-black pl-6 text-left">
-            <p className="text-lg sm:text-xl font-bold text-gray-800 leading-relaxed">
-              No bullshit. No complex setup. Just reliable API key generation 
-              for developers who value speed over fluff.
+            <div className="border-l-4 border-white pl-4 mb-8 inline-block">
+              <p className="text-lg sm:text-xl font-bold uppercase tracking-wider">
+                Full Stack Developer
+              </p>
+              <p className="text-sm font-bold text-gray-400 uppercase tracking-wider mt-1">
+                & UI Designer
+              </p>
+            </div>
+
+            <p className="text-base font-bold text-gray-300 max-w-md mb-8 leading-relaxed">
+              I build digital experiences that don't follow trends. 
+              Raw, functional, and built to last.
             </p>
+
+            <div className="flex flex-col sm:flex-row items-center lg:items-start gap-4">
+              <a href="#work" className="group px-8 py-4 bg-white text-black font-black text-lg uppercase tracking-wider border-4 border-white hover:bg-black hover:text-white transition-all flex items-center gap-3">
+                <Eye className="w-5 h-5" />
+                VIEW WORK
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </a>
+              <a href="#contact" className="px-8 py-4 bg-black text-white font-black text-lg uppercase tracking-wider border-4 border-white hover:bg-white hover:text-black transition-all flex items-center gap-3">
+                <Mail className="w-5 h-5" />
+                GET IN TOUCH
+              </a>
+            </div>
+          </div>
+
+          {/* Right: Photo */}
+          <div className="relative">
+            <div className="absolute -inset-4 border-4 border-white opacity-20 translate-x-4 translate-y-4" />
+            <div className="relative border-4 border-white bg-gray-900 overflow-hidden">
+              <img 
+                src="/profile.jpg"
+                alt="Muhammad Raihan Ali - Developer"
+                className="w-full h-[500px] object-cover object-center grayscale hover:grayscale-0 transition-all duration-700"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-black/80 border-t-4 border-white p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-wider text-gray-400">Developer</p>
+                    <p className="text-sm font-black">Muhammad Raihan Ali</p>
+                  </div>
+                  <div className="w-10 h-10 bg-white text-black flex items-center justify-center font-black text-xs border-2 border-white">
+                    MRA
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* CTA Buttons - Brutalist style */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-          <Link href="/free">
-            <button className="group px-8 py-4 bg-black text-white font-black text-lg uppercase tracking-wider border-4 border-black hover:bg-white hover:text-black transition-all duration-200 flex items-center gap-3">
-              <Zap className="w-5 h-5" />
-              GET FREE KEY
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </button>
-          </Link>
-
-          <a href="#pricing" className="px-8 py-4 bg-yellow-400 text-black font-black text-lg uppercase tracking-wider border-4 border-black hover:bg-black hover:text-yellow-400 transition-all duration-200 flex items-center gap-3">
-            <Eye className="w-5 h-5" />
-            SEE PRICING
-          </a>
-        </div>
-
-        {/* Stats - Raw brutalist cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mt-16 pb-12">
           {[
-            { num: "500+", label: "DEVS", color: "bg-cyan-400" },
-            { num: "99.9%", label: "UPTIME", color: "bg-green-400" },
-            { num: "<100ms", label: "SPEED", color: "bg-yellow-400" },
-            { num: "24/7", label: "SUPPORT", color: "bg-red-400" },
+            { num: "2+", label: "YEARS EXP" },
+            { num: "1+", label: "PROJECTS" },
+            { num: "3+", label: "CLIENTS" },
+            { num: "100%", label: "COMMITMENT" },
           ].map((stat, idx) => (
-            <div key={idx} className={`${stat.color} border-4 border-black p-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all`}>
+            <div key={idx} className="border-4 border-white p-4 hover:bg-white hover:text-black transition-all text-center">
               <div className="text-3xl font-black">{stat.num}</div>
-              <div className="text-xs font-black uppercase tracking-widest">{stat.label}</div>
+              <div className="text-xs font-black uppercase tracking-widest mt-1">{stat.label}</div>
             </div>
           ))}
         </div>
       </div>
 
       {/* Corner decorations */}
-      <div className="absolute top-24 left-4 w-16 h-16 border-l-4 border-t-4 border-black opacity-30" />
-      <div className="absolute bottom-8 right-4 w-16 h-16 border-r-4 border-b-4 border-black opacity-30" />
+      <div className="absolute top-24 left-4 w-20 h-20 border-l-4 border-t-4 border-white opacity-20" />
+      <div className="absolute bottom-8 right-4 w-20 h-20 border-r-4 border-b-4 border-white opacity-20" />
     </section>
   );
 }
@@ -285,91 +433,102 @@ function MarqueeSection() {
   return (
     <Marquee 
       items={[
-        "NO HIDDEN FEES",
-        "INSTANT GENERATION", 
-        "DEVELOPER FIRST",
-        "RAW POWER",
-        "NO BULLSHIT",
-        "FAST SUPPORT",
-        "SECURE BY DEFAULT",
-        "SCALE ANYTIME"
+        "REACT",
+        "NEXT.JS", 
+        "TYPESCRIPT",
+        "NODE.JS",
+        "TAILWIND",
+        "FIGMA",
+        "BRUTALISM",
+        "RAW DESIGN"
       ]} 
-      speed={25}
+      speed={20}
     />
   );
 }
 
-// Features Section
-function FeaturesSection() {
-  const features = [
+// Work Section
+function WorkSection() {
+  const projects = [
     {
       num: "01",
-      title: "RAW SPEED",
-      desc: "Generate keys in under 100ms. Our infrastructure doesn't mess around.",
-      icon: Zap,
-      color: "bg-cyan-400"
-    },
-    {
-      num: "02", 
-      title: "FORT KNOX",
-      desc: "AES-256 encryption. Your keys are safer than government secrets.",
-      icon: Lock,
-      color: "bg-red-400"
-    },
-    {
-      num: "03",
-      title: "INFINITE SCALE", 
-      desc: "50 requests or 50 million. We handle it without breaking a sweat.",
-      icon: Cpu,
-      color: "bg-yellow-400"
-    },
-    {
-      num: "04",
-      title: "TOTAL CONTROL",
-      desc: "Granular permissions. You decide who gets what. Period.",
-      icon: MousePointer,
-      color: "bg-green-400"
+      title: "AKM SCRIPT",
+      desc: "API Key Generator platform with brutalist design. Built for developers who value speed.",
+      tags: ["NEXT.JS", "TYPESCRIPT", "TAILWIND"],
+      year: "2026",
+      image: "https://kimi-web-img.moonshot.cn/img/lovable.dev/8e1dc4c880aa7bcdd1583f2f43d046bb81c53f17.webp",
+      link: "#"
     }
   ];
 
   return (
-    <section id="features" className="py-24 bg-gray-100 border-y-4 border-black">
+    <section id="work" className="py-24 bg-white border-b-4 border-black">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-16">
-          <span className="inline-block px-3 py-1 bg-black text-white text-xs font-black uppercase tracking-widest mb-4">
-            WHY US
-          </span>
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter">
-            BUILT DIFFERENT.
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 bg-black border-4 border-black flex items-center justify-center">
+              <Hash className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-xs font-black uppercase tracking-[0.3em] text-gray-500">Selected Work</span>
+          </div>
+          <h2 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tighter">
+            PROJECTS.
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {features.map((feature, idx) => {
-            const { ref, isInView } = useInView(0.2);
+        <div className="space-y-0">
+          {projects.map((project, idx) => {
+            const { ref, isInView } = useInView(0.15);
             return (
               <div
                 key={idx}
                 ref={ref}
-                className={`group relative bg-white border-4 border-black p-8 hover:translate-x-2 hover:translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 ${
+                className={`group border-4 border-black border-b-0 last:border-b-4 hover:bg-black hover:text-white transition-all duration-300 ${
                   isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                 }`}
-                style={{ transitionDelay: `${idx * 100}ms` }}
               >
-                <div className="flex items-start justify-between mb-6">
-                  <div className={`w-14 h-14 ${feature.color} border-4 border-black flex items-center justify-center`}>
-                    <feature.icon className="w-7 h-7 text-black" />
+                <div className="grid grid-cols-1 lg:grid-cols-3">
+                  <div className="relative lg:col-span-1 border-b-4 lg:border-b-0 lg:border-r-4 border-black overflow-hidden">
+                    <img 
+                      src={project.image}
+                      alt={project.title}
+                      className="w-full h-64 lg:h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                    />
+                    <div className="absolute top-4 left-4">
+                      <span className="px-3 py-1 bg-black text-white text-xs font-black uppercase border-2 border-white">
+                        {project.year}
+                      </span>
+                    </div>
                   </div>
-                  <span className="text-4xl font-black text-gray-200 group-hover:text-black transition-colors">
-                    {feature.num}
-                  </span>
+
+                  <div className="lg:col-span-2 p-6 md:p-8">
+                    <div className="flex items-center gap-4 mb-3">
+                      <span className="text-4xl font-black text-gray-300 group-hover:text-white transition-colors">
+                        {project.num}
+                      </span>
+                    </div>
+                    <h3 className="text-2xl md:text-3xl font-black uppercase tracking-tighter mb-3 group-hover:underline decoration-4 underline-offset-4">
+                      {project.title}
+                    </h3>
+                    <p className="text-sm font-bold text-gray-600 group-hover:text-gray-300 max-w-xl mb-4 transition-colors">
+                      {project.desc}
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {project.tags.map((tag, tidx) => (
+                        <span key={tidx} className="px-3 py-1 text-xs font-black uppercase border-2 border-black group-hover:border-white transition-colors">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <a 
+                      href={project.link}
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-black text-white font-black uppercase tracking-wider border-4 border-black group-hover:bg-white group-hover:text-black transition-all"
+                    >
+                      VIEW PROJECT
+                      <ArrowUpRight className="w-5 h-5" />
+                    </a>
+                  </div>
                 </div>
-                <h3 className="text-2xl font-black uppercase tracking-tighter mb-3">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-700 font-medium leading-relaxed">
-                  {feature.desc}
-                </p>
               </div>
             );
           })}
@@ -379,162 +538,161 @@ function FeaturesSection() {
   );
 }
 
-// Pricing Section
-function PricingSection() {
-  const [billing, setBilling] = useState<"weekly" | "annual">("weekly");
+// About Section
+function AboutSection() {
+  const skills = [
+    "JAVASCRIPT", "TYPESCRIPT", "REACT", "NEXT.JS", "NODE.JS",
+    "TAILWIND", "POSTGRES", "DOCKER", "AWS", "FIGMA"
+  ];
 
   return (
-    <section id="pricing" className="py-24 bg-white relative">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="mb-12">
-          <span className="inline-block px-3 py-1 bg-red-500 text-white text-xs font-black uppercase tracking-widest mb-4 border-2 border-black">
-            PRICING
-          </span>
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter mb-4">
-            PAY WHAT YOU NEED.
-          </h2>
-          <p className="text-lg font-bold text-gray-600 max-w-xl">
-            No enterprise sales calls. No "contact us for pricing". Just honest numbers.
-          </p>
-        </div>
-
-        {/* Billing Toggle */}
-        <div className="inline-flex items-center gap-0 mb-12 border-4 border-black">
-          <button
-            onClick={() => setBilling("weekly")}
-            className={`px-6 py-3 font-black uppercase tracking-wider text-sm transition-all ${
-              billing === "weekly" 
-                ? "bg-black text-white" 
-                : "bg-white text-black hover:bg-gray-100"
-            }`}
-          >
-            WEEKLY
-          </button>
-          <button
-            onClick={() => setBilling("annual")}
-            className={`px-6 py-3 font-black uppercase tracking-wider text-sm transition-all border-l-4 border-black ${
-              billing === "annual" 
-                ? "bg-black text-white" 
-                : "bg-white text-black hover:bg-gray-100"
-            }`}
-          >
-            ANNUAL
-            <span className="ml-2 px-2 py-0.5 bg-yellow-400 text-black text-xs">-30%</span>
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* FREE PLAN */}
-          <div className="relative group">
-            <div className="absolute inset-0 bg-cyan-400 border-4 border-black translate-x-3 translate-y-3 transition-transform group-hover:translate-x-4 group-hover:translate-y-4" />
-            <div className="relative bg-white border-4 border-black p-8">
-              <div className="flex items-center justify-between mb-6">
-                <div className="px-3 py-1 bg-black text-white text-xs font-black uppercase tracking-widest">
-                  FREE TIER
-                </div>
-                <Zap className="w-6 h-6" />
+    <section id="about" className="py-24 bg-gray-100 border-b-4 border-black">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-black border-4 border-black flex items-center justify-center">
+                <MousePointer className="w-6 h-6 text-white" />
               </div>
-
-              <h3 className="text-3xl font-black uppercase tracking-tighter mb-2">FREE</h3>
-              <div className="mb-8">
-                <span className="text-5xl font-black">Rp0</span>
-                <span className="text-sm font-bold text-gray-500 uppercase"> / FOREVER</span>
-              </div>
-
-              <ul className="space-y-4 mb-8">
-                {[
-                  { text: "1 Hour full access", ok: true },
-                  { text: "50 Requests per key", ok: true },
-                  { text: "Social follow required", ok: true, warn: true },
-                  { text: "Basic support only", ok: true },
-                  { text: "No rate limit control", ok: false },
-                  { text: "No priority queue", ok: false },
-                ].map((item, idx) => (
-                  <li key={idx} className={`flex items-center gap-3 font-bold ${item.ok ? 'text-black' : 'text-gray-400 line-through'}`}>
-                    <div className={`w-6 h-6 border-2 border-black flex items-center justify-center ${item.ok ? 'bg-black' : 'bg-gray-200'}`}>
-                      {item.ok ? (
-                        <CheckCircle2 className="w-4 h-4 text-white" />
-                      ) : (
-                        <X className="w-4 h-4 text-gray-400" />
-                      )}
-                    </div>
-                    <span>{item.text}</span>
-                    {item.warn && (
-                      <span className="ml-auto px-2 py-0.5 bg-yellow-400 text-xs font-black uppercase">REQ</span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-
-              <Link href="/free" className="block">
-                <button className="w-full py-4 bg-black text-white font-black uppercase tracking-wider border-4 border-black hover:bg-white hover:text-black transition-all flex items-center justify-center gap-2 group/btn">
-                  GET FREE KEY
-                  <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
-                </button>
-              </Link>
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-gray-500">About Me</span>
             </div>
-          </div>
+            <h2 className="text-5xl sm:text-6xl font-black tracking-tighter mb-8">
+              I BUILD THINGS<br />THAT WORK.
+            </h2>
 
-          {/* PREMIUM PLAN */}
-          <div className="relative group">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-              <div className="px-4 py-2 bg-red-500 text-white font-black text-xs uppercase tracking-widest border-4 border-black whitespace-nowrap">
-                MOST POPULAR ★
+            <div className="border-4 border-black mb-8 relative group">
+              <div className="absolute -inset-2 border-4 border-black opacity-10 translate-x-2 translate-y-2" />
+              <div className="relative overflow-hidden">
+                <img 
+                  src="https://kimi-web-img.moonshot.cn/img/www.makerstations.io/661d8b25cde0d229a1ff79acc64a1a0303bbafef.jpeg"
+                  alt="Workspace"
+                  className="w-full h-64 object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-black/80 border-t-4 border-white p-3">
+                  <p className="text-xs font-black uppercase tracking-wider text-gray-400">My Workspace</p>
+                </div>
               </div>
             </div>
-            <div className="absolute inset-0 bg-yellow-400 border-4 border-black translate-x-3 translate-y-3 transition-transform group-hover:translate-x-4 group-hover:translate-y-4" />
-            <div className="relative bg-white border-4 border-black p-8">
-              <div className="flex items-center justify-between mb-6">
-                <div className="px-3 py-1 bg-yellow-400 text-black text-xs font-black uppercase tracking-widest border-2 border-black">
-                  PREMIUM
-                </div>
-                <Sparkles className="w-6 h-6" />
-              </div>
 
-              <h3 className="text-3xl font-black uppercase tracking-tighter mb-2">PREMIUM</h3>
-              <div className="mb-8">
-                <span className="text-5xl font-black">
-                  {billing === "weekly" ? "Rp10.000" : "Rp84.000"}
-                </span>
-                <span className="text-sm font-bold text-gray-500 uppercase">
-                  {billing === "weekly" ? " / 7 DAYS" : " / YEAR"}
-                </span>
-              </div>
-
-              <ul className="space-y-4 mb-8">
-                {[
-                  { text: "7 Days full access", ok: true, hot: true },
-                  { text: "1,000 Requests/day", ok: true, hot: true },
-                  { text: "No social requirements", ok: true },
-                  { text: "24/7 Priority support", ok: true },
-                  { text: "Advanced analytics", ok: true },
-                  { text: "Custom integrations", ok: true },
-                ].map((item, idx) => (
-                  <li key={idx} className="flex items-center gap-3 font-bold text-black">
-                    <div className="w-6 h-6 border-2 border-black bg-black flex items-center justify-center">
-                      <CheckCircle2 className="w-4 h-4 text-white" />
-                    </div>
-                    <span className={item.hot ? "text-lg" : ""}>{item.text}</span>
-                    {item.hot && (
-                      <span className="ml-auto px-2 py-0.5 bg-red-500 text-white text-xs font-black uppercase border-2 border-black">
-                        HOT
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-
-              <Link href="/premium" className="block">
-                <button className="w-full py-4 bg-yellow-400 text-black font-black uppercase tracking-wider border-4 border-black hover:bg-black hover:text-yellow-400 transition-all flex items-center justify-center gap-2 group/btn">
-                  BUY PREMIUM
-                  <ArrowUpRight className="w-5 h-5 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
-                </button>
-              </Link>
-
-              <p className="text-center text-xs font-bold text-gray-500 mt-4 uppercase tracking-wider">
-                7-Day Money Back — No Questions
+            <div className="space-y-4 text-lg font-bold text-gray-700">
+              <p>
+                I'm Muhammad Raihan Ali — a full-stack developer with a design background. 
+                I don't do trends, I do functional, lasting work.
+              </p>
+              <p>
+                Specialized in React ecosystems, brutalist UI, and high-performance 
+                web applications. Every pixel serves a purpose.
+              </p>
+              <p>
+                Based in Indonesia. Working globally with clients who value raw, 
+                honest design over decorative fluff.
               </p>
             </div>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a href="#contact" className="px-6 py-3 bg-black text-white font-black uppercase tracking-wider border-4 border-black hover:bg-white hover:text-black transition-all flex items-center gap-2">
+                <Mail className="w-4 h-4" />
+                CONTACT
+              </a>
+              <button className="px-6 py-3 bg-white text-black font-black uppercase tracking-wider border-4 border-black hover:bg-black hover:text-white transition-all flex items-center gap-2">
+                <Download className="w-4 h-4" />
+                RESUME
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-8">
+            <div className="border-4 border-black bg-white p-6">
+              <h3 className="text-sm font-black uppercase tracking-wider mb-4">QUICK INFO</h3>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-black flex items-center justify-center">
+                    <MapPin className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-black uppercase text-gray-500">Location</p>
+                    <p className="font-bold">Indonesia</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-black flex items-center justify-center">
+                    <Calendar className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-black uppercase text-gray-500">Experience</p>
+                    <p className="font-bold">1+ Years</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-black flex items-center justify-center">
+                    <Briefcase className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-black uppercase text-gray-500">Role</p>
+                    <p className="font-bold">Full Stack Dev</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-black flex items-center justify-center">
+                    <Code2 className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-black uppercase text-gray-500">Focus</p>
+                    <p className="font-bold">Web & UI</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-4 border-black bg-white p-6">
+              <h3 className="text-sm font-black uppercase tracking-wider mb-4">TECH STACK</h3>
+              <div className="flex flex-wrap gap-2">
+                {skills.map((skill, idx) => (
+                  <span 
+                    key={idx} 
+                    className="px-3 py-2 text-sm font-black uppercase border-2 border-black hover:bg-black hover:text-white transition-colors cursor-default"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="border-4 border-black bg-white">
+              <div className="border-b-4 border-black p-4 bg-black text-white">
+                <h3 className="text-sm font-black uppercase tracking-wider">EXPERIENCE</h3>
+              </div>
+              <div>
+                {[
+                  { role: "JUNIOR DEV", company: "Freelance", period: "2020 — 2021" }
+                ].map((job, idx) => (
+                  <div key={idx} className="p-4 border-b-2 border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors">
+                    <div className="flex justify-between items-start mb-1">
+                      <span className="font-black uppercase tracking-tighter">{job.role}</span>
+                      <span className="text-xs font-bold text-gray-500">{job.period}</span>
+                    </div>
+                    <span className="text-sm font-bold text-gray-600">{job.company}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="border-4 border-black bg-white p-6">
+              <h3 className="text-sm font-black uppercase tracking-wider mb-4">SERVICES</h3>
+              <ul className="space-y-2">
+                {[
+                  "WEB DEVELOPMENT",
+                  "UI/UX DESIGN",
+                  "API DEVELOPMENT",
+                  "CONSULTING"
+                ].map((service, idx) => (
+                  <li key={idx} className="flex items-center gap-3 font-bold">
+                    <ChevronRight className="w-4 h-4" />
+                    {service}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -542,94 +700,69 @@ function PricingSection() {
   );
 }
 
-// Testimonials
-function TestimonialsSection() {
-  const testimonials = [
-    {
-      name: "ANDI W.",
-      role: "FULL STACK DEV",
-      content: "AKM Script doesn't fuck around. I got my API key in 2 seconds and was back to coding. No onboarding bullshit.",
-      rating: 5
-    },
-    {
-      name: "SITI R.",
-      role: "LEAD ENGINEER",
-      content: "Switched from a competitor that charged 10x more. Premium plan is a steal. Support actually knows what they're talking about.",
-      rating: 5
-    },
-    {
-      name: "BUDI S.",
-      role: "INDIE HACKER",
-      content: "Free tier for testing, premium for production. The pricing is so straightforward I didn't have to ask my boss for approval.",
-      rating: 5
-    }
-  ];
-
+// Contact Section
+function ContactSection() {
   return (
-    <section className="py-24 bg-black text-white">
+    <section id="contact" className="py-24 bg-black text-white">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="mb-16">
-          <span className="inline-block px-3 py-1 bg-white text-black text-xs font-black uppercase tracking-widest mb-4">
-            PROOF
-          </span>
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter">
-            REAL DEVS. REAL OPINIONS.
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {testimonials.map((t, idx) => {
-            const { ref, isInView } = useInView(0.2);
-            return (
-              <div
-                key={idx}
-                ref={ref}
-                className={`border-4 border-white p-6 hover:bg-white hover:text-black transition-all duration-300 ${
-                  isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-                }`}
-                style={{ transitionDelay: `${idx * 150}ms` }}
-              >
-                <div className="flex gap-1 mb-4">
-                  {[...Array(t.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-lg font-bold leading-relaxed mb-6">
-                  "{t.content}"
-                </p>
-                <div className="border-t-2 border-current pt-4">
-                  <div className="font-black uppercase tracking-wider">{t.name}</div>
-                  <div className="text-sm font-bold opacity-70">{t.role}</div>
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-white border-4 border-white flex items-center justify-center">
+                <Mail className="w-6 h-6 text-black" />
               </div>
-            );
-          })}
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-gray-400">Get In Touch</span>
+            </div>
+            <h2 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tighter mb-6">
+              LET'S WORK<br />TOGETHER.
+            </h2>
+            <p className="text-lg font-bold text-gray-400 max-w-md mb-8">
+              Have a project in mind? Want to collaborate? 
+              Just want to say hi? I'm always open.
+            </p>
+
+            <div className="space-y-4">
+              <div className="border-4 border-white p-4 hover:bg-white hover:text-black transition-all">
+                <div className="text-xs font-black uppercase tracking-wider text-gray-400 mb-1">EMAIL</div>
+                <a href="mailto:raihan@akm.dev" className="text-xl font-black hover:underline break-all">
+                  RAIHANALIMUHAMMAD12420@GMAIL.COM
+                </a>
+              </div>
+              <div className="border-4 border-white p-4 hover:bg-white hover:text-black transition-all">
+                <div className="text-xs font-black uppercase tracking-wider text-gray-400 mb-1">LOCATION</div>
+                <span className="text-xl font-black">SURABAYA, INDONESIA</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col justify-end">
+            <div className="border-4 border-white">
+              <div className="border-b-4 border-white p-4">
+                <h3 className="text-sm font-black uppercase tracking-wider">SOCIAL LINKS</h3>
+              </div>
+              <div>
+                {[
+                  { name: "GITHUB", icon: Globe, url: "https://github.com/UnDecrypted" },
+                  { name: "INSTAGRAM", icon: AtSign, url: "https://www.instagram.com/muraaldb_/" },
+                  { name: "WHATSAPP", icon: MessageSquare, url: "https://wa.me/6289525032522" },
+                  { name: "EMAIL", icon: Mail, url: "mailto:raihanalimuhammad12420@gmail.com" }
+                ].map((social, idx) => (
+                  <a
+                    key={idx}
+                    href={social.url}
+                    className="flex items-center justify-between p-4 border-b-2 border-gray-800 last:border-b-0 hover:bg-white hover:text-black transition-all group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <social.icon className="w-5 h-5" />
+                      <span className="font-black uppercase tracking-wider">{social.name}</span>
+                    </div>
+                    <ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
-  );
-}
-
-// CTA Section
-function CTASection() {
-  return (
-    <section className="py-24 bg-yellow-400 border-y-4 border-black">
-      <div className="max-w-4xl mx-auto px-4 text-center">
-        <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter mb-6">
-          STOP WAITING.
-        </h2>
-        <p className="text-xl font-bold text-black/80 mb-10 max-w-2xl mx-auto">
-          Your API keys are waiting. Generate your first one in under 10 seconds. 
-          No credit card. No bullshit.
-        </p>
-
-        <Link href="/free">
-          <button className="group px-10 py-5 bg-black text-white font-black text-xl uppercase tracking-wider border-4 border-black hover:bg-white hover:text-black transition-all flex items-center gap-3 mx-auto">
-            <Rocket className="w-6 h-6" />
-            GENERATE KEY NOW
-            <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
-          </button>
-        </Link>
       </div>
     </section>
   );
@@ -638,99 +771,54 @@ function CTASection() {
 // Footer
 function Footer() {
   return (
-    <footer className="bg-white border-t-4 border-black py-12">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-black flex items-center justify-center">
-                <Terminal className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-2xl font-black tracking-tighter">AKM.SCRIPT</span>
-            </div>
-            <p className="font-bold text-gray-600 max-w-sm">
-              Brutalist API key generation for developers who don't have time for fluff.
-            </p>
+    <footer className="border-t-4 border-black bg-white py-8 pb-32 md:pb-8">
+      <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-black flex items-center justify-center">
+            <Terminal className="w-4 h-4 text-white" />
           </div>
-
-          <div>
-            <h4 className="font-black uppercase tracking-wider mb-4 text-sm">Product</h4>
-            <ul className="space-y-2">
-              {["Features", "Pricing", "Docs", "Status"].map((item) => (
-                <li key={item}>
-                  <a href="#" className="font-bold text-gray-600 hover:text-black hover:underline transition-all">
-                    {item}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-black uppercase tracking-wider mb-4 text-sm">Legal</h4>
-            <ul className="space-y-2">
-              {["Privacy", "Terms", "Security"].map((item) => (
-                <li key={item}>
-                  <a href="#" className="font-bold text-gray-600 hover:text-black hover:underline transition-all">
-                    {item}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <span className="text-sm font-black uppercase tracking-wider">MRA.DEV</span>
         </div>
-
-        <div className="pt-8 border-t-4 border-black flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="font-black text-sm text-gray-500 uppercase tracking-wider">
-            © 2026 AKM SCRIPT. ALL RIGHTS RESERVED.
-          </p>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-green-400 border-2 border-black" />
-            <span className="font-bold text-sm">SYSTEM OPERATIONAL</span>
-          </div>
+        <p className="text-xs font-black uppercase tracking-widest text-gray-400">
+          © 2026 — MUHAMMAD RAIHAN ALI
+        </p>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 bg-black border-2 border-black" />
+          <span className="text-xs font-black uppercase">ALL SYSTEMS NOMINAL</span>
         </div>
       </div>
     </footer>
   );
 }
 
-// Main Page
-export default function Home() {
+// Main Page Component
+export default function Portfolio() {
   return (
-    <div className="relative min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
-      <Scanlines />
+    <div className="relative min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white pb-0">
       <Navbar />
+      <MusicPlayer />
 
       <main>
         <HeroSection />
         <MarqueeSection />
-        <FeaturesSection />
-        <PricingSection />
-        <TestimonialsSection />
-        <CTASection />
+        <WorkSection />
+        <AboutSection />
+        <ContactSection />
       </main>
 
       <Footer />
 
       <style jsx global>{`
-        @keyframes marquee-left {
+        @keyframes marquee {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
         }
-        @keyframes marquee-right {
-          0% { transform: translateX(-50%); }
-          100% { transform: translateX(0); }
-        }
-        .animate-marquee-left {
-          animation: marquee-left linear infinite;
-        }
-        .animate-marquee-right {
-          animation: marquee-right linear infinite;
+        .animate-marquee {
+          animation: marquee linear infinite;
         }
         html {
           scroll-behavior: smooth;
         }
-        /* Brutalist scrollbar */
         ::-webkit-scrollbar {
           width: 16px;
         }
@@ -742,8 +830,9 @@ export default function Home() {
           background: #000;
           border: 2px solid #fff;
         }
-        ::-webkit-scrollbar-thumb:hover {
-          background: #333;
+        ::selection {
+          background: #000;
+          color: #fff;
         }
       `}</style>
     </div>
